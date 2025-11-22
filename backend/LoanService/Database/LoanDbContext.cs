@@ -27,7 +27,8 @@ public class LoanDbContext(DbContextOptions<LoanDbContext>  options) : DbContext
                 .IsRequired();
             
             entity.HasIndex(x => x.Number)
-                .IsUnique();
+                .IsUnique()
+                .HasDatabaseName("UX_Loans_Number");
         });
         
         base.OnModelCreating(modelBuilder);

@@ -1,4 +1,5 @@
 using LoanService.Database;
+using LoanService.Database.Extensions;
 using LoanService.Endpoints;
 using LoanService.Middleware;
 using LoanService.Service;

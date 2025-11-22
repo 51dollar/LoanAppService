@@ -1,7 +1,7 @@
 using LoanService.Database.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace LoanService.Database;
+namespace LoanService.Database.Extensions;
 
 public static class DbExtensions
 {

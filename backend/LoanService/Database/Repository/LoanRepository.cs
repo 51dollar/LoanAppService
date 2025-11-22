@@ -1,15 +1,30 @@
+using LoanService.Database.Extensions;
 using LoanService.Entities;
+using LoanService.Service.Queries.Filter;
+using LoanService.Service.Queries.Page;
+using LoanService.Service.Queries.Sort;
 using Microsoft.EntityFrameworkCore;
 
 namespace LoanService.Database.Repository;
 
 internal class LoanRepository(LoanDbContext context) : ILoanRepository
 {
-    public async Task<IEnumerable<Loan?>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<PageResult<Loan>> GetAllAsync(
+        LoanFilter filter,
+        SortParams sortParams,
+        PageParams pageParams,
+        CancellationToken cancellationToken)
     {
         return await context.Set<Loan>()
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .Filter(filter)
+            .Sort(sortParams)
+            .ToPageAsync(pageParams, cancellationToken);
+    }
+    
+    public async Task<bool> ExistsByNumberAsync(string number, CancellationToken cancellationToken)
+    {
+        return await context.Loans.AnyAsync(x => x.Number == number, cancellationToken);
     }
     
     public async Task<Loan?> GetByNumberAsync(string number, CancellationToken cancellationToken)

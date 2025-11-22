@@ -1,32 +1,46 @@
+using LoanService.Database.Extensions;
 using LoanService.Database.Repository;
 using LoanService.Entities;
 using LoanService.Service.Dto;
+using LoanService.Service.Queries.Filter;
+using LoanService.Service.Queries.Page;
+using LoanService.Service.Queries.Sort;
+using Microsoft.EntityFrameworkCore;
 
 namespace LoanService.Service;
 
 internal class LoanService(ILoanRepository repository) : ILoanService
 {
-    public async Task<IEnumerable<LoanDto>> GetAllLoansAsync(CancellationToken cancellationToken)
+    public async Task<PageResult<LoanDto>> GetAllLoansAsync(
+        LoanFilter filter,
+        SortParams sortParams,
+        PageParams pageParams,
+        CancellationToken cancellationToken)
     {
-        var entity = await repository.GetAllAsync(cancellationToken);
-        if (entity is null)
+        var entityPage  = await repository.GetAllAsync(
+            filter, sortParams, pageParams, cancellationToken);
+        if (entityPage  is null)
             throw new KeyNotFoundException("Not found.");
 
-        var loansDto = entity.Select(x => new LoanDto
+        var loansDto = entityPage.Data.Select(x => new LoanDto
         {
-            Status =  x.Status = StatusType.Published,
-            Number = x.Number.ToLower(),
+            Status =  x.Status,
+            Number = x.Number,
             Amount = x.Amount,
             TermValue = x.TermValue,
             InterestValue = x.InterestValue,
             CreatedAt = x.CreatedAt,
         });
         
-        return loansDto;
+        return new PageResult<LoanDto>(loansDto, entityPage.Data.Count());
     }
 
     public async Task<LoanDto> CreateLoanAsync(LoanCreateDto createDto, CancellationToken cancellationToken)
     {
+        var exists = await repository.ExistsByNumberAsync(createDto.Number, cancellationToken);
+        if (exists)
+            throw new ArgumentException($"A request with number {createDto.Number} already exists");
+        
         if (createDto.Amount <= 0)
             throw new ArgumentException("Amount must be greater than 0");
 
@@ -39,7 +53,7 @@ internal class LoanService(ILoanRepository repository) : ILoanService
         var entity = new Loan
         {
             Status = StatusType.Published,
-            Number =  createDto.Number,
+            Number =  createDto.Number.ToLower(),
             Amount = createDto.Amount,
             TermValue = createDto.TermValue,
             InterestValue = createDto.InterestValue,
@@ -47,7 +61,15 @@ internal class LoanService(ILoanRepository repository) : ILoanService
             ModifiedAt = DateTimeOffset.UtcNow
         };
         
-        await repository.CreateAsync(entity, cancellationToken);
+        try
+        {
+            await repository.CreateAsync(entity, cancellationToken);
+        }
+        catch (DbUpdateException ex) when
+            (ex.InnerException?.Message.Contains("UX_Loans_Number") == true)
+        {
+            throw new ArgumentException($"A request with number {createDto.Number} already exists");
+        }
 
         var dto = new LoanDto
         {

@@ -1,5 +1,8 @@
 using LoanService.Service;
 using LoanService.Service.Dto;
+using LoanService.Service.Queries.Filter;
+using LoanService.Service.Queries.Page;
+using LoanService.Service.Queries.Sort;
 
 namespace LoanService.Endpoints;
 
@@ -16,10 +19,16 @@ public static class LoanEndpoints
 
         return app;
     }
-    
-    private static async Task<IResult> GetAllLoansAsync(ILoanService service, CancellationToken ct)
+
+    private static async Task<IResult> GetAllLoansAsync(
+        [AsParameters] LoanFilter filter,
+        [AsParameters] SortParams sortParams,
+        [AsParameters] PageParams pageParams,
+        ILoanService service,
+        CancellationToken ct
+    )
     {
-        var result = await service.GetAllLoansAsync(ct);
+        var result = await service.GetAllLoansAsync(filter, sortParams, pageParams, ct);
         return Results.Ok(result);
     }
 
@@ -27,7 +36,7 @@ public static class LoanEndpoints
     {
         if (dto is null)
             return Results.BadRequest(new { error = "Request body is required." });
-        
+
         try
         {
             var loanDto = await service.CreateLoanAsync(dto, ct);
@@ -39,11 +48,12 @@ public static class LoanEndpoints
         }
     }
 
-    private static async Task<IResult> UpdateLoanAsync(string number, LoanUpdateDto? dto, ILoanService service, CancellationToken ct)
+    private static async Task<IResult> UpdateLoanAsync(string number, LoanUpdateDto? dto, ILoanService service,
+        CancellationToken ct)
     {
         if (dto is null)
             return Results.BadRequest(new { error = "Request body is required." });
-        
+
         try
         {
             await service.UpdateAsync(number, dto, ct);
