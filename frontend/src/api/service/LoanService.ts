@@ -5,8 +5,8 @@ import type { LoanUpdateDto } from '../DTOs/LoanUpdateDto.ts';
 import type { PageResult } from '../types/PageResult';
 
 interface TypeResponse {
-    Data?: LoanDto[];
-    TotalCount?: number;
+    data?: LoanDto[];
+    totalCount?: number;
 }
 
 export async function getLoans(
@@ -14,7 +14,7 @@ export async function getLoans(
     pageSize = 10
 ): Promise<PageResult<LoanDto>> {
 
-    const { data } = await api.get<TypeResponse>('/loans', {
+    const response = await api.get<TypeResponse>('/loans', {
         params: {
             PageNumber: pageNumber,
             PageSize: pageSize
@@ -22,8 +22,8 @@ export async function getLoans(
     });
 
     return {
-        data: Array.isArray(data.Data) ? data.Data : [],
-        totalCount: typeof data.TotalCount === 'number' ? data.TotalCount : 0
+        data: Array.isArray(response.data.data) ? response.data.data : [],
+        totalCount: typeof response.data.totalCount === 'number' ? response.data.totalCount : 0,
     };
 }
 
