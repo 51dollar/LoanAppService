@@ -1,8 +1,8 @@
-import { api } from '../axios';
-import type { LoanDto } from "../DTOs/LoanDto";
-import type { LoanCreateDto} from '../DTOs/LoanCreateDto.ts';
-import type { LoanUpdateDto } from '../DTOs/LoanUpdateDto.ts';
-import type { PageResult } from '../types/PageResult';
+import {api} from '../axios';
+import type {LoanDto} from "../DTOs/LoanDto";
+import type {LoanCreateDto} from '../DTOs/LoanCreateDto.ts';
+import type {LoanUpdateDto} from '../DTOs/LoanUpdateDto.ts';
+import type {PageResult} from '../types/PageResult';
 
 interface TypeResponse {
     data?: LoanDto[];
