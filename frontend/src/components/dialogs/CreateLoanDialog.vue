@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {ref, reactive} from 'vue';
-import type {LoanCreateDto} from '../../api/DTOs/LoanCreateDto.ts';
-import {validateLoanCreate, LoanErrors} from '../../validators/loanValidator.ts';
+import {ref} from 'vue';
+import type { LoanCreateDto } from '../../validators/loanSchemas'; // ← измените импорт
+import { validateLoanCreate, type LoanErrors } from '../../validators/loanValidator';
 
 const emit = defineEmits<{
   (e: 'result', value: LoanCreateDto | null): void
@@ -9,14 +9,14 @@ const emit = defineEmits<{
 
 const dialog = ref<HTMLDialogElement | null>(null);
 
-const form = reactive<LoanCreateDto>({
+const form = ref<LoanCreateDto>({
   number: '',
-  amount: '',
-  termValue: '',
-  interestValue: ''
+  amount: 0,
+  termValue: 0,
+  interestValue: 0
 });
 
-const errors = reactive<LoanErrors>({
+const errors = ref<LoanErrors>({
   number: '',
   amount: '',
   termValue: '',
@@ -24,13 +24,32 @@ const errors = reactive<LoanErrors>({
 });
 
 const validate = () => {
-  const validationErrors = validateLoanCreate(form);
-  Object.assign(errors, validationErrors);
+  const validationErrors = validateLoanCreate(form.value);
 
-  return !Object.values(validationErrors).some(e => e);
+  errors.value = {
+    number: validationErrors.number || '',
+    amount: validationErrors.amount || '',
+    termValue: validationErrors.termValue || '',
+    interestValue: validationErrors.interestValue || ''
+  };
+
+  return Object.keys(validationErrors).length === 0;
 };
 
 const open = () => {
+  form.value = {
+    number: '',
+    amount: 0,
+    termValue: 0,
+    interestValue: 0
+  };
+  errors.value = {
+    number: '',
+    amount: '',
+    termValue: '',
+    interestValue: ''
+  };
+
   dialog.value?.showModal();
 };
 
@@ -40,9 +59,12 @@ const close = () => {
 };
 
 const submit = () => {
-  if (!validate()) return;
+  if (!validate()) {
+    console.log('Ошибка валидации', errors);
+    return;
+  }
 
-  emit('result', form);
+  emit('result', form.value);
   dialog.value?.close();
 };
 

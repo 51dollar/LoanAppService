@@ -1,17 +1,20 @@
-import type {LoanCreateDto} from '../api/DTOs/LoanCreateDto.ts';
+import { LoanCreateSchema, type LoanCreateDto } from './loanSchemas';
 
-export interface LoanErrors {
-    number: string
-    amount: string
-    termValue: string
-    interestValue: string
-}
+export type LoanErrors = Partial<Record<keyof LoanCreateDto, string>>;
 
 export function validateLoanCreate(form: LoanCreateDto): LoanErrors {
-    return {
-        number: form.number.trim() ? '' : 'Номер заявки обязателен',
-        amount: form.amount > 0 ? '' : 'Сумма должна быть больше 0',
-        termValue: form.termValue > 0 ? '' : 'Срок должен быть больше 0',
-        interestValue: form.interestValue > 0 ? '' : 'Процент должен быть больше 0'
+    const result = LoanCreateSchema.safeParse(form);
+
+    if (result.success) {
+        return {};
     }
+
+    const errors: LoanErrors = {};
+
+    result.error.issues.forEach(issue => {
+        const field = issue.path[0] as keyof LoanCreateDto;
+        errors[field] = issue.message;
+    });
+
+    return errors;
 }

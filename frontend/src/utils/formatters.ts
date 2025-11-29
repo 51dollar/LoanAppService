@@ -18,7 +18,6 @@ export function formatTermDays(term: number | null | undefined): string {
 
 export function formatInterestPercent(interest: number | null | undefined): string {
     if (interest == null || Number.isNaN(interest)) return ''
-    // показываем до 2 знаков, но убираем .00
     const rounded = Math.round(interest * 100) / 100
     return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(2)}%`
 }
