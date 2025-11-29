@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import {ref, onMounted, onUnmounted} from 'vue';
+import {ref, onMounted, onUnmounted, computed} from 'vue';
 import BaseTable from "./components/table/BaseTable.vue";
 import {getLoans, createLoan} from './api/service/LoanService.ts';
 import type {LoanDto} from './api/DTOs/LoanDto.ts';
 import type {PageResult} from './api/types/PageResult.ts';
 import CreateLoanDialog from './components/dialogs/CreateLoanDialog.vue';
+import {mapLoansToDisplay} from './utils/formatters.ts';
 
 const loans = ref<LoanDto[]>([]);
 const totalCount = ref(0)
 
 const headers = [
   {key: 'number', label: 'Номер'},
-  {key: 'status', label: 'Статус'},
+  {key: 'statusLabel', label: 'Статус'},
   {key: 'amount', label: 'Сумма'},
   {key: 'termValue', label: 'Срок'},
   {key: 'interestValue', label: 'Процент'},
@@ -19,6 +20,8 @@ const headers = [
 ];
 
 let interval: number;
+
+const displayRows = computed(() => mapLoansToDisplay(loans.value))
 
 const loadLoans = async () => {
   const result: PageResult<LoanDto> = await getLoans()
@@ -71,7 +74,7 @@ onUnmounted(() => {
 
     <BaseTable
         :headers="headers"
-        :rows=loans
+        :rows=displayRows
     />
 
     <p class="mt-6">Всего записей: {{ totalCount }}</p>
