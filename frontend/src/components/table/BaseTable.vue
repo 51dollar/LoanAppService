@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {LoanDto} from '../../api/DTOs/LoanDto.ts';
+import type {LoanDto} from '../../model/DTOs/LoanDto.ts';
 
 defineProps<{
   headers: { key: keyof LoanDto; label: string }[]

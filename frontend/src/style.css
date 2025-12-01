@@ -42,7 +42,7 @@ body {
 .table-wrapper {
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 2px;
 
     //background: rgba(0, 0, 0, 0.6);
     background: rgba(255, 255, 255, 0.03);
@@ -61,6 +61,55 @@ body {
     flex-direction: column;
 }
 
-.my-button {
-    @apply px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white rounded-2xl font-semibold transition duration-300;
+.close-button {
+    @apply absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/10 text-white text-lg
+    flex items-center justify-center hover:bg-white/20 transition;
+}
+
+.default-button {
+    @apply inline-flex items-center justify-center
+    px-3 py-2 font-semibold rounded-2xl cursor-pointer transition
+
+    text-white
+    text-base
+
+    bg-white/8
+    backdrop-blur-md
+
+    shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_10px_30px_rgba(0,0,0,0.4)];
+}
+
+.default-button:hover {
+    @apply bg-white/20
+    shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_12px_36px_rgba(0,0,0,0.45)]
+    -translate-y-0.5;
+}
+
+.default-button:active {
+    @apply translate-y-0
+    shadow-[0_0_0_1px_rgba(255,255,255,0.03),0_4px_12px_rgba(0,0,0,0.3)];
+}
+
+.create-button {
+    @apply inline-flex items-center justify-center
+    px-3 py-2 font-semibold rounded-2xl cursor-pointer transition
+
+    text-white
+    text-base
+
+    bg-amber-400/50
+    backdrop-blur-md
+
+    shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_10px_30px_rgba(0,0,0,0.4)];
+}
+
+.create-button:hover {
+    @apply bg-amber-400/20
+    shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_12px_36px_rgba(0,0,0,0.45)]
+    -translate-y-[2px];
+}
+
+.create-button:active {
+    @apply translate-y-0
+    shadow-[0_0_0_1px_rgba(255,255,255,0.03),0_4px_12px_rgba(0,0,0,0.3)];
 }

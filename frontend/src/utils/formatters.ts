@@ -1,5 +1,5 @@
-import type {LoanDto} from '../api/DTOs/LoanDto.ts';
-import {StatusType} from '../api/DTOs/StatusType.ts';
+import type {LoanDto} from '../model/DTOs/LoanDto.ts';
+import {StatusType} from '../model/types/StatusType.ts';
 
 function pad2(n: number) {
     return n < 10 ? `0${n}` : `${n}`;

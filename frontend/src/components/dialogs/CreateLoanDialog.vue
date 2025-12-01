@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from 'vue';
-import type { LoanCreateDto } from '../../validators/loanSchemas'; // ← измените импорт
+import type { LoanCreateDto } from '../../validators/loanSchemas';
 import { validateLoanCreate, type LoanErrors } from '../../validators/loanValidator';
 
 const emit = defineEmits<{
@@ -73,6 +73,8 @@ defineExpose({open});
 
 <template>
   <dialog ref="dialog">
+    <button class="close-button" @click="close">x</button>
+
     <h3 class="header">Создание заявки</h3>
 
     <div class="space-y-4 w-full">
@@ -127,16 +129,8 @@ defineExpose({open});
 
     <div class="actions">
       <button
-          @click="close"
-          class="px-3 py-1 bg-gray-800 hover:bg-gray-700 text-white
-           rounded-2xl font-semibold transition duration-300"
-      >
-        Отмена
-      </button>
-
-      <button
           @click="submit"
-          class="my-button"
+          class="create-button"
       >
         Создать
       </button>
@@ -149,6 +143,7 @@ dialog {
   border: none;
   padding: 10px;
   border-radius: 24px;
+
   background: rgba(30, 30, 30, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);

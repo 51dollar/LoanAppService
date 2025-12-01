@@ -1,4 +1,4 @@
-import {StatusType} from './StatusType.ts';
+import {StatusType} from '../types/StatusType.ts';
 
 export interface LoanDto {
     status: StatusType;

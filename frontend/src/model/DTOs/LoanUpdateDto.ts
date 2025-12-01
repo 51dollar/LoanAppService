@@ -1,4 +1,4 @@
-import type {StatusType} from './StatusType.ts';
+import type {StatusType} from '../types/StatusType.ts';
 
 export interface LoanUpdateDto {
     number?: string;

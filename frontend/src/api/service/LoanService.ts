@@ -1,8 +1,10 @@
 import {api} from '../axios';
-import type {LoanDto} from "../DTOs/LoanDto";
-import type {LoanCreateDto} from '../DTOs/LoanCreateDto.ts';
-import type {LoanUpdateDto} from '../DTOs/LoanUpdateDto.ts';
-import type {PageResult} from '../types/PageResult';
+import type {LoanDto} from "../../model/DTOs/LoanDto";
+import type {LoanCreateDto} from '../../model/DTOs/LoanCreateDto.ts';
+import type {LoanUpdateDto} from '../../model/DTOs/LoanUpdateDto.ts';
+import type {PageResult} from '../../model/types/PageResult';
+import type {LoanQuery} from '../../model/types/LoanQuery.ts';
+import {StatusType} from '../../model/types/StatusType.ts';
 
 interface TypeResponse {
     data?: LoanDto[];
@@ -10,16 +12,51 @@ interface TypeResponse {
 }
 
 export async function getLoans(
+    filters?: LoanQuery,
     pageNumber = 1,
     pageSize = 10
 ): Promise<PageResult<LoanDto>> {
 
-    const response = await api.get<TypeResponse>('/loans', {
-        params: {
-            PageNumber: pageNumber,
-            PageSize: pageSize
+    console.log('Входные параметры для API: ', filters);
+
+    const params: Record<string, any> = {
+        PageNumber: pageNumber,
+        PageSize: pageSize,
+        OrderBy: filters?.orderBy ?? '',
+        SortDirection: typeof filters?.sortDirection === 'number' ? filters!.sortDirection : 1
+    };
+
+
+    if (filters?.status !== undefined) {
+        console.log('Входные параметры для Статуса: ', filters.status);
+
+        switch (filters.status) {
+            case 1:
+                params.Status = StatusType.Published
+                break
+            case 2:
+                params.Status = StatusType.Unpublished
+                break
+            default:
+                break
         }
-    });
+    }
+
+    if (filters?.amountMin != null && !Number.isNaN(filters.amountMin)) {
+        params.MinAmount = filters.amountMin;
+    }
+    if (filters?.amountMax != null && !Number.isNaN(filters.amountMax)) {
+        params.MaxAmount = filters.amountMax;
+    }
+
+    if (filters?.termMin != null && !Number.isNaN(filters.termMin)) {
+        params.MinTerm = filters.termMin;
+    }
+    if (filters?.termMax != null && !Number.isNaN(filters.termMax)) {
+        params.MaxTerm = filters.termMax;
+    }
+
+    const response = await api.get<TypeResponse>('/loans', {params});
 
     return {
         data: Array.isArray(response.data.data) ? response.data.data : [],
