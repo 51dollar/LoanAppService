@@ -68,8 +68,8 @@ defineExpose({open});
       <label class="label">Статус</label>
       <select v-model="local.status" class="input">
         <option :value="undefined">Все</option>
-        <option :value="1">Опубликованные</option>
-        <option :value="2">Снятые с публикации</option>
+        <option :value="1">Опубликованный</option>
+        <option :value="2">Снятый с публикации</option>
       </select>
       </div>
 

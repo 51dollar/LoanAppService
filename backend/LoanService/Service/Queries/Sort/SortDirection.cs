@@ -2,6 +2,6 @@ namespace LoanService.Service.Queries.Sort;
 
 public enum SortDirection
 {
-    Ascending,
-    Descending
+    Ascending = 1,
+    Descending = 2
 }

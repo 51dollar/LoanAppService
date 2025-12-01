@@ -17,7 +17,7 @@ export async function getLoans(
     pageSize = 10
 ): Promise<PageResult<LoanDto>> {
 
-    console.log('Входные параметры для API: ', filters);
+    console.log('Входные параметры фильтрации API: ', filters);
 
     const params: Record<string, any> = {
         PageNumber: pageNumber,
@@ -28,8 +28,6 @@ export async function getLoans(
 
 
     if (filters?.status !== undefined) {
-        console.log('Входные параметры для Статуса: ', filters.status);
-
         switch (filters.status) {
             case 1:
                 params.Status = StatusType.Published

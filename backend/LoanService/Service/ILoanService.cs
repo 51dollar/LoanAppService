@@ -1,4 +1,4 @@
-using LoanService.Database.Extensions;
+using LoanService.Entities;
 using LoanService.Service.Dto;
 using LoanService.Service.Queries.Filter;
 using LoanService.Service.Queries.Page;

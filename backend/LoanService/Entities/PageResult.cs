@@ -1,4 +1,4 @@
-namespace LoanService.Database.Extensions;
+namespace LoanService.Entities;
 
 public class PageResult<T>
 {
