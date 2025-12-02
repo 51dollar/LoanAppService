@@ -10,9 +10,11 @@ import {mapLoansToDisplay} from './utils/formatters.ts';
 import type {LoanCreateDto} from './model/DTOs/LoanCreateDto.ts';
 import type {LoanQuery} from './model/types/LoanQuery.ts';
 import type {LoanUpdateDto} from './model/DTOs/LoanUpdateDto.ts';
+import {Redo, Undo} from 'lucide-vue-next';
 
+const pageNumber = ref(1);
+const pageSize = ref(10);
 const loans = ref<LoanDto[]>([]);
-const totalCount = ref(0);
 
 const headers = [
   {key: 'number', label: 'Номер'},
@@ -28,25 +30,31 @@ let interval: number;
 
 const displayRows = computed(() => mapLoansToDisplay(loans.value));
 
-const loadLoans = async (filters?: LoanQuery, pageNumber = 1, pageSize = 10) => {
-  const result: PageResult<LoanDto> = await getLoans(filters, pageNumber, pageSize);
+const loadLoans = async (filters?: LoanQuery, page = 1, size = 10) => {
+  const result: PageResult<LoanDto> = await getLoans(filters, page, size);
   loans.value = result.data;
-  totalCount.value = result.totalCount;
 };
+
+const goToPage = async (page: number) => {
+  if (page < 1) return;
+  pageNumber.value = page;
+  await loadLoans(undefined, pageNumber.value, pageSize.value);
+};
+
+const nextPage = () => goToPage(pageNumber.value + 1);
+const prevPage = () => goToPage(pageNumber.value - 1);
 
 const createLoanDialog = ref<InstanceType<typeof CreateLoanDialog> | null>(null);
 const filterDialog = ref<InstanceType<typeof LoanFilterDialog> | null>(null);
 
-const openCreateDialog = () => {
-  createLoanDialog.value?.open();
-};
-const openFilterDialog = () => {
-  filterDialog.value?.open();
-};
+const openCreateDialog = () => createLoanDialog.value?.open();
+const openFilterDialog = () => filterDialog.value?.open();
 
 const onApplyFilters = async (filters: LoanQuery) => {
-  await loadLoans(filters, 1, 10);
+  pageNumber.value = 1;
+  await loadLoans(filters);
 };
+
 const handleCreateLoan = async (data: LoanCreateDto | null) => {
   if (!data) return;
 
@@ -59,9 +67,7 @@ const handleCreateLoan = async (data: LoanCreateDto | null) => {
 };
 
 const updateStatus = async (loan: LoanDto) => {
-  const dto: LoanUpdateDto = {
-    status: loan.status === 1 ? 2 : 1
-  };
+  const dto: LoanUpdateDto = {status: loan.status === 1 ? 2 : 1};
 
   try {
     await updateLoan(loan.number, dto);
@@ -94,8 +100,7 @@ onUnmounted(() => {
 <template>
   <div class="main-container">
     <div class="pb-6 flex items-center justify-between">
-      <h1 class="text-3xl">Данные с API</h1>
-
+      <div class="flex-1"></div>
       <div class="flex space-x-2">
         <button
             @click="openFilterDialog"
@@ -126,6 +131,16 @@ onUnmounted(() => {
         @delete-loan="removeLoan"
     />
 
-    <p class="mt-6">Всего записей: {{ totalCount }}</p>
+    <div class="flex space-x-3 p-4 justify-center">
+      <button @click="prevPage" :disabled="pageNumber === 1" class="default-button">
+        <Undo class="p-0.5" :size="20"/>
+      </button>
+
+      <span>{{pageNumber}}</span>
+
+      <button @click="nextPage" class="default-button">
+        <Redo class="p-0.5" :size="20"/>
+      </button>
+    </div>
   </div>
 </template>
