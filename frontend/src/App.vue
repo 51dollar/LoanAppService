@@ -15,6 +15,7 @@ import {Redo, Undo} from 'lucide-vue-next';
 const pageNumber = ref(1);
 const pageSize = ref(10);
 const loans = ref<LoanDto[]>([]);
+const isLoading = ref(false);
 
 const headers = [
   {key: 'number', label: 'Номер'},
@@ -31,8 +32,18 @@ let interval: number;
 const displayRows = computed(() => mapLoansToDisplay(loans.value));
 
 const loadLoans = async (filters?: LoanQuery, page = 1, size = 10) => {
-  const result: PageResult<LoanDto> = await getLoans(filters, page, size);
-  loans.value = result.data;
+  isLoading.value = true;
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const result: PageResult<LoanDto> = await getLoans(filters, page, size);
+    loans.value = result.data;
+  } catch (e) {
+    console.error('Ошибка загрузки данных', e);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const goToPage = async (page: number) => {
@@ -125,21 +136,26 @@ onUnmounted(() => {
     </div>
 
     <BaseTable
+        v-if="!isLoading"
         :headers="headers"
         :rows="displayRows"
         @toggle-status="updateStatus"
         @delete-loan="removeLoan"
     />
 
+    <div v-else class="space-y-2">
+      <div v-for="n in pageSize" :key="n" class="h-10 bg-white/5 rounded-4xl animate-pulse"></div>
+    </div>
+
     <div class="flex space-x-3 p-4 justify-center">
       <button @click="prevPage" :disabled="pageNumber === 1" class="default-button">
-        <Undo class="p-0.5" :size="20"/>
+        <Undo class="p-0.5" :size="20" />
       </button>
 
-      <span>{{pageNumber}}</span>
+      <span>{{ pageNumber }}</span>
 
       <button @click="nextPage" class="default-button">
-        <Redo class="p-0.5" :size="20"/>
+        <Redo class="p-0.5" :size="20" />
       </button>
     </div>
   </div>
