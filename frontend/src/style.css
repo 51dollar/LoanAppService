@@ -113,3 +113,25 @@ body {
     @apply translate-y-0
     shadow-[0_0_0_1px_rgba(255,255,255,0.03),0_4px_12px_rgba(0,0,0,0.3)];
 }
+
+.action-button {
+    @apply inline-flex items-center justify-center
+    px-3 py-1 font-semibold rounded-3xl cursor-pointer transition
+
+    text-white
+    text-base
+
+    bg-white/8
+    backdrop-blur-md
+}
+
+.action-button:hover {
+    @apply bg-amber-400/20
+    shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_12px_36px_rgba(0,0,0,0.45)]
+    -translate-y-[2px];
+}
+
+.action-button:active {
+    @apply translate-y-0
+    shadow-[0_0_0_1px_rgba(255,255,255,0.03),0_4px_12px_rgba(0,0,0,0.3)];
+}

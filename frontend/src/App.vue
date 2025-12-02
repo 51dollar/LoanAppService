@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, onMounted, onUnmounted, computed} from 'vue';
 import BaseTable from "./components/table/BaseTable.vue";
-import {getLoans, createLoan} from './api/service/LoanService.ts';
+import {getLoans, createLoan, updateLoan, deleteLoan} from './api/service/LoanService.ts';
 import type {LoanDto} from './model/DTOs/LoanDto.ts';
 import type {PageResult} from './model/types/PageResult.ts';
 import CreateLoanDialog from './components/dialogs/CreateLoanDialog.vue';
@@ -9,6 +9,7 @@ import LoanFilterDialog from './components/dialogs/LoanFilterDialog.vue';
 import {mapLoansToDisplay} from './utils/formatters.ts';
 import type {LoanCreateDto} from './model/DTOs/LoanCreateDto.ts';
 import type {LoanQuery} from './model/types/LoanQuery.ts';
+import type {LoanUpdateDto} from './model/DTOs/LoanUpdateDto.ts';
 
 const loans = ref<LoanDto[]>([]);
 const totalCount = ref(0);
@@ -19,7 +20,8 @@ const headers = [
   {key: 'amount', label: 'Сумма'},
   {key: 'termValue', label: 'Срок'},
   {key: 'interestValue', label: 'Процент'},
-  {key: 'createdAt', label: 'Дата создания'}
+  {key: 'createdAt', label: 'Дата создания'},
+  {key: 'actions', label: 'Действия'}
 ];
 
 let interval: number;
@@ -53,6 +55,30 @@ const handleCreateLoan = async (data: LoanCreateDto | null) => {
     await loadLoans();
   } catch (e) {
     console.error('Ошибка создания:', e);
+  }
+};
+
+const updateStatus = async (loan: LoanDto) => {
+  const dto: LoanUpdateDto = {
+    status: loan.status === 1 ? 2 : 1
+  };
+
+  try {
+    await updateLoan(loan.number, dto);
+    await loadLoans();
+  } catch (e) {
+    console.error('Ошибка смены статуса:', e);
+  }
+};
+
+const removeLoan = async (loan: LoanDto) => {
+  if (!confirm(`Удалить заявку №${loan.number}?`)) return;
+
+  try {
+    await deleteLoan(loan.number);
+    await loadLoans();
+  } catch (e) {
+    console.error('Ошибка удаления:', e);
   }
 };
 
@@ -96,6 +122,8 @@ onUnmounted(() => {
     <BaseTable
         :headers="headers"
         :rows="displayRows"
+        @toggle-status="updateStatus"
+        @delete-loan="removeLoan"
     />
 
     <p class="mt-6">Всего записей: {{ totalCount }}</p>

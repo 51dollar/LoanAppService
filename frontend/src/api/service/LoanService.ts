@@ -73,10 +73,12 @@ export async function updateLoan(
 ): Promise<boolean> {
 
     await api.patch(`/loans/${number}`, updatedData);
+    console.log('Данные обновлены', updatedData);
     return true;
 }
 
 export async function deleteLoan(number: string): Promise<boolean> {
     await api.delete(`/loans/${number}`);
+    console.log(`Данные №${number} удалены`);
     return true;
 }

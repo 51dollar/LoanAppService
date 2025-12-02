@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, reactive} from 'vue';
 import type {LoanQuery} from '../../model/types/LoanQuery';
+import {X} from 'lucide-vue-next';
 
 const emit = defineEmits<{
   (e: 'apply', filters: LoanQuery): void
@@ -59,7 +60,9 @@ defineExpose({open});
 
 <template>
   <dialog ref="dialogRef">
-    <button class="close-button" @click="close">x</button>
+    <button class="close-button" @click="close">
+      <X />
+    </button>
 
     <div class="header">Фильтры заявок</div>
 

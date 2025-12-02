@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {ref} from 'vue';
-import type { LoanCreateDto } from '../../validators/loanSchemas';
-import { validateLoanCreate, type LoanErrors } from '../../validators/loanValidator';
+import type {LoanCreateDto} from '../../validators/loanSchemas';
+import {validateLoanCreate, type LoanErrors} from '../../validators/loanValidator';
+import {X} from 'lucide-vue-next';
 
 const emit = defineEmits<{
   (e: 'result', value: LoanCreateDto | null): void
@@ -73,7 +74,9 @@ defineExpose({open});
 
 <template>
   <dialog ref="dialog">
-    <button class="close-button" @click="close">x</button>
+    <button class="close-button" @click="close">
+      <X />
+    </button>
 
     <h3 class="header">Создание заявки</h3>
 
