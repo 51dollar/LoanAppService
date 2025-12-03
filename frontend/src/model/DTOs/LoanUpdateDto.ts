@@ -1,8 +1,8 @@
-import type {StatusType} from '../types/StatusType.ts';
+import type {StatusType} from '../types';
 
 export interface LoanUpdateDto {
     number?: string;
-    status?: StatusType
+    status: StatusType
     amount?: number;
     termValue?: number;
     interestValue?: number;
