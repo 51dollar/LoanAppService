@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${SQL_PASSWORD}
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+  backend:
+    build:
+      context: ./backend/LoanService
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=${SQL_SERVER};Database=${SQL_NAME};User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;
+    depends_on:
+      - sqlserver
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+

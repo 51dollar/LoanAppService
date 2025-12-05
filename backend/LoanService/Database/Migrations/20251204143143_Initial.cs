@@ -30,7 +30,7 @@ namespace LoanService.Database.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Loans_Number",
+                name: "UX_Loans_Number",
                 table: "Loans",
                 column: "Number",
                 unique: true);

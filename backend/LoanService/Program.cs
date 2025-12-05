@@ -1,7 +1,5 @@
-using LoanService.Database.Extensions;
 using LoanService.Endpoints;
 using LoanService.Middleware;
-using LoanService.Service;
 using Scalar.AspNetCore;
 using LoanService.Extensions;
 
@@ -12,21 +10,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddFrontendCors();
 builder.Services.AddDb(builder.Configuration);
 builder.Services.AddServices();
+builder.Services.AddAppHealthChecks(builder.Configuration);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
-
 app.UseGlobalExceptionHandler();
-app.MapLoanEndpoints();
-
 app.UseHttpsRedirection();
 app.UseFrontendCors();
+app.ApplyMigrations();
 
-app.MapGet("/", () => "Hello World!");
+app.MapOpenApi();
+app.MapScalarApiReference();
+app.MapLoanEndpoints();
+app.MapAppHealthChecks();
 
 app.Run();
