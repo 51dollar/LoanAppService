@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2025-latest
@@ -10,6 +8,7 @@ services:
       - MSSQL_PID=Developer
     ports:
       - "1433:1433"
+
   backend:
     build:
       context: ./backend/LoanService
@@ -22,6 +21,12 @@ services:
       - ConnectionStrings__DefaultConnection=Server=${SQL_SERVER};Database=${SQL_NAME};User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;
     depends_on:
       - sqlserver
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 2
+      start_period: 10s
 
   frontend:
     build:
@@ -33,6 +38,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 

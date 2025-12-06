@@ -17,7 +17,7 @@ var app = builder.Build();
 app.UseGlobalExceptionHandler();
 app.UseHttpsRedirection();
 app.UseFrontendCors();
-app.ApplyMigrations();
+await app.ApplyMigrations();
 
 app.MapOpenApi();
 app.MapScalarApiReference();

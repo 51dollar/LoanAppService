@@ -1,4 +1,6 @@
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace LoanService.Extensions;
 
@@ -6,23 +8,28 @@ public static class HealthCheckExtensions
 {
     public static IServiceCollection AddAppHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
+        }
+        
         services.AddHealthChecks()
             .AddSqlServer(
-                configuration.GetConnectionString("DefaultConnection") ?? string.Empty,
-                name: "sqlserver",
-                timeout: TimeSpan.FromSeconds(30),
-                tags: new[] { "ok" }
-            );
+                connectionString: connectionString,
+                name: "database",
+                failureStatus: HealthStatus.Unhealthy,
+                timeout: TimeSpan.FromSeconds(30));
 
         return services;
     }
 
     public static IEndpointRouteBuilder MapAppHealthChecks(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapHealthChecks("/health");
-        endpoints.MapHealthChecks("/health/ok", new HealthCheckOptions
+        endpoints.MapHealthChecks("/health", new HealthCheckOptions
         {
-            Predicate = check => check.Tags.Contains("ok")
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
         return endpoints;
